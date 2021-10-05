@@ -1,0 +1,926 @@
+<mvc:View controllerName="queroquerons.workflow.controller.Workflow"
+	xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true" class="sapUiSizeCompact"
+	xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:table="sap.ui.table"
+    xmlns:u="sap.m.upload"
+    xmlns:commons="sap.ui.commons"
+	xmlns="sap.m">
+	<Shell id="shell">
+
+		<SplitApp id="app">
+			<masterPages>
+				<Page id="page"
+					class="sapUiSizeCompact"
+					title="{i18n>listTitle}">
+					
+					<subHeader>
+						<Toolbar>
+							<SearchField liveChange="onLiveChange"/>
+                            
+						</Toolbar>			
+					</subHeader>
+
+					<content>
+                            <Button text="Marcar tudo"    press="onSelectAll" id="selectAll" icon="sap-icon://multiselect-all"></Button>
+                            <Button text="Desmarcar tudo" press="onDeselectAll" id="deselectAll" icon="sap-icon://multiselect-none"></Button>
+
+						<List id="list"
+							items="{WorkflowModel>/WorkflowSet}"
+							growing="true"
+                            mode="MultiSelect"
+							growingScrollToLoad="true"
+							growingThreshold="40"
+							itemPress="onItemPress">                            
+							<items>
+								<ObjectListItem 
+									type="Navigation"
+									title="{WorkflowModel>Zpdsol}"		
+                                    intro="{WorkflowModel>Bktxt}"							
+									number="{
+												path: 'WorkflowModel>Wrbtr',
+												formatter: '.formatCurrency'
+											}"
+                                    markFlagged="true"
+									press="onItemClick">
+									
+									<attributes>
+										<ObjectAttribute text="{
+												path: 'WorkflowModel>Zldesp',
+												formatter: '.formataTipoDespesa'
+											}"/>
+									</attributes>
+
+								</ObjectListItem>
+							</items>
+						</List>
+                        
+					</content>
+				</Page>
+			</masterPages>
+
+			<detailPages>
+				<Page id="page-detail"
+					title="Portal Despesas Lojas Quero-Quero">
+
+					<content >
+
+						<ObjectHeader id="solic" titleActive="true" titlePress=".onIdPress">
+							<attributes>
+								<ObjectAttribute id="id-solic" press="onIdPress" active="true"/>
+								<ObjectAttribute id="valor"/>
+							</attributes>
+						</ObjectHeader>
+						                                <!-- TIPO 1 -->
+                                <f:SimpleForm id="headerTipo1"
+                                    editable="true"
+                                    layout="ResponsiveGridLayout"
+                                    visible="false"
+                                    labelSpanXL="4"
+                                    labelSpanL="4"
+                                    labelSpanM="4"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="1"
+                                    emptySpanL="1"
+                                    emptySpanM="1"
+                                    emptySpanS="12"
+                                    columnsXL="2"
+                                    columnsL="2"
+                                    columnsM="2"
+									class="sapUiSizeCompact"
+                                    singleContainerFullSize="false">
+                                    <f:content>
+                                        <core:Title />
+                                        <Label text="Tipo lançamento"
+                                            class="sapUiHLayoutChildWrapper"></Label>
+                                        <Input id="tipoLanc"
+                                            value="1"
+                                            editable="false">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M3 S3" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text text="Despesas fornecedor"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL2 L4 M4 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Fornecedor" />
+                                        <Input id="fornec"
+                                            placeholder=""
+                                            editable="false"
+											width="100%"
+                                            value="{oDetailModel>/Lifnr}"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onLifnrMatchCode">
+                                            <suggestionItems>
+                                                <core:Item />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL2 L3 M3 S3"/>
+                                            </layoutData>
+                                        </Input> 
+                                        <Text id="txtLifnr"
+											text="{oDetailModel>/Name1}"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L4 M4 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Nota Fiscal" />
+                                        <Input id="nf"
+											value="{oDetailModel>/Xbelnr}"
+                                            width="60%"
+                                            editable="false"/>
+
+                                        <Label text="Data Documento" />
+										
+                                        <Input value="{
+                                            path: 'oDetailModel>/Zpudt',
+                                            formatter: '.formatDate'
+                                        }"
+                                            editable="false"
+                                            width="50%"></Input>
+
+                                        <Label text="Data Lçto" />
+                                        <Input value="{
+                                            path: 'oDetailModel>/Budat',
+                                            formatter: '.formatDate'
+                                        }"
+                                            editable="false"
+                                            width="50%"></Input>
+
+                                        <core:Title />
+                                        <Label text="Forma pagto." />
+                                        <Input id="formaPag"
+											value="{oDetailModel>/Zlsch}"
+                                            placeholder=""
+                                            submit=".updFPgto"
+                                            showSuggestion="true"
+                                            editable="false"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+
+                                        <Text id="txtFPgto"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L5 M2 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Data base" />
+                                        <Input value="{
+                                            path: 'oDetailModel>/Zfbdt',
+                                            formatter: '.formatDate'
+											}"
+                                            editable="false"
+                                            width="50%"></Input>
+
+                                        <Label text="Condição Pgto" />
+                                        <Input id="condPgto"
+											value="{oDetailModel>/Zterm}"
+                                            placeholder=""
+                                            submit=".updZterm"
+                                            showSuggestion="true"
+                                            editable="false"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item  />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text id="txtZterm"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L5 M2 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Empresa" />
+                                        <Input id="empresa"
+                                            value="{oDetailModel>/Bukrs}"
+                                            placeholder=""
+                                            submit=".updBukrs"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            editable="false"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item  />
+                                            </suggestionItems>
+
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text id="txtBukrs"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L5 M4 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Texto Cabeçalho" />
+                                        <Input id="txtCab"
+											value="{oDetailModel>/Bktxt}"
+                                            editable="false" />
+
+                                        <Label text="Cod. Aprov" />
+                                        <Input id="codAprov"
+											value="{oDetailModel>/Pargb}"
+                                            placeholder=""
+                                            editable="false"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+
+                                        <Text id="txtCodAprov"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L6 M6 S6" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Valor Total" />
+                                        <Input id="vTotal"
+                                            value="{
+												path: 'oDetailModel>/Wrbtr',
+												formatOptions: { minIntegerDigits: 1, minFractionDigits: 3, maxFractionDigits: 3, groupingEnabled: true, groupingSeparator: '.', decimalSeparator: ',' }
+											}"
+                                            type="Number"
+                                            width="60%"
+                                            editable="false"
+                                            submit="calculaTotais"/>
+
+                                        <Label text="Total itens da NF"
+                                            class="txtLine" />
+                                        <Input id="totNf"
+                                            width="60%"
+                                            value="{
+												path: 'oDetailModel>/Ztotnf',
+												formatOptions: { minIntegerDigits: 1, minFractionDigits: 3, maxFractionDigits: 3, groupingEnabled: true, groupingSeparator: '.', decimalSeparator: ',' }
+											}"
+                                            type="Number"
+                                            editable="false"/>
+
+                                        <Label class="sapMLabel"
+                                            text="Dif. Lançamento"></Label>											
+											
+                                	     <Input
+											id="difLanc"
+                                            width="60%"
+											type='Number'
+											value="{
+												path: 'oDetailModel>/Zdifl',
+												formatOptions: { minIntegerDigits: 1, minFractionDigits: 3, maxFractionDigits: 3, groupingEnabled: true, groupingSeparator: '.', decimalSeparator: ',' }
+											}"			
+                                            editable="false"
+											/>		
+                                        <Label />
+									</f:content>
+                                </f:SimpleForm>
+
+                                <f:SimpleForm id="tltleNFTab"
+                                    visible="false"
+                                    title="Itens da Nota Fiscal">
+                                </f:SimpleForm>
+
+                                <Table visible="false"
+									class="sapUiSizeCompact"
+                                    id="NFTable"
+                                    mode="None">
+                                    <columns>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Item"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Conta Contábil"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Texto Item"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Ordem"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Centro Custo"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Valor"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Orçamento"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Disponível"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+
+                                    </items>
+                                </Table>
+                                <!-- FIM TIPO 1 -->
+
+								<!-- TIPO 2 -->		
+                                <f:SimpleForm id="headerTipo2"
+                                    editable="true"
+                                    layout="ResponsiveGridLayout"
+                                    visible="false"
+                                    labelSpanXL="4"
+                                    labelSpanL="4"
+                                    labelSpanM="4"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="1"
+                                    emptySpanL="1"
+                                    emptySpanM="1"
+                                    emptySpanS="12"
+                                    columnsXL="2"
+                                    columnsL="2"
+                                    columnsM="2"
+									class="sapUiSizeCompact"
+                                    singleContainerFullSize="false">
+                                    <f:content>
+                                        <core:Title />
+                                        <Label text="Tipo lançamento"
+                                            class="sapUiHLayoutChildWrapper"></Label>
+                                        <Input id="tipoLancTipo2"
+                                            value="1"
+                                            class="inputValue"
+                                            editable="false">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M3 S3" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text text="Reembolso de viagem"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL2 L4 M4 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Matrícula" />
+                                        <Input id="matricula"
+                                            placeholder=""
+                                            editable="false"
+											width="100%"
+                                            value="{oDetailModel>/Lifnr}"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onLifnrMatchCode">
+                                            <suggestionItems>
+                                                <core:Item />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL2 L3 M3 S3"/>
+                                            </layoutData>
+                                        </Input> 
+
+                                        <Label text="Empresa" />
+                                        <Input id="empresaTipo2"
+                                            value="{oDetailModel>/Bukrs}"
+                                            placeholder=""
+                                            submit=".updBukrs"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            editable="false"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item  />
+                                            </suggestionItems>
+
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+
+                                        <Label text="Data Documento" />
+                                        <Input value="{
+                                            path: 'oDetailModel>/Zpudt',
+                                            formatter: '.formatDate'
+                                        }"
+                                            editable="false" 
+											id="dtDocTipo2"
+                                            width="50%"></Input>
+
+                                        <Label text="Data Lçto" />
+                                        <Input value="{
+                                            path: 'oDetailModel>/Budat',
+                                            formatter: '.formatDate'
+                                        }"
+                                            editable="false" 
+											id="dtLancTipo2"
+                                            width="50%"></Input>
+
+											<Label text="Texto Cabeçalho" />
+											<Input 
+												value="{oDetailModel>/Bktxt}"
+												id="txtCabTipo2"
+												editable="false" />
+
+                                                <Label text="Célula" />
+                                                <Input 
+                                                id="celula"
+                                                    editable="false"
+                                                    width="70%"></Input>
+        
+                                                <Label text="Cód. Aprovador" />
+                                                <Input 
+                                                    editable="false"
+                                                    id="codAprovTipo2"
+                                                    width="35%"></Input>                                                
+
+                                        <core:Title />
+                                        <Label text="Área" />
+                                        <Input 
+											id="area"
+                                            editable="false"
+                                            width="70%"></Input>
+                                        <Label text="CPF" />
+                                        <Input 
+										id="cpf"
+                                            editable="false"
+                                            width="70%"></Input>
+                                        <Label text="Banco" />
+                                        <Input 
+										id="banco"
+                                            editable="false"
+                                            width="35%"></Input>
+                                        <Label text="Agência" />
+                                        <Input 
+										id="agencia"
+                                            editable="false"
+                                            width="35%"></Input>
+											<Label text="Conta bancária" />
+											<Input 
+											id="bkont"
+												editable="false"
+												width="70%"></Input>
+                                        <Label text="Cartão Alelo" />
+                                        <Input 
+										id="alelo"
+                                            editable="false"
+                                            width="35%"></Input>
+
+                                        <!-- <core:Title /> -->
+                                        <!-- <Label /> -->
+										<!-- <core:Title /> -->
+										<Label class="sapMLabel"
+										text="Adto. recebido"></Label>											
+										<Input
+											id="adtoViagem"
+											width="60%"
+											editable="false"
+											value="{
+											path: 'oDetailModel>/Vladtrec',
+                                            formatter: '.formatCurrency'	
+                                        }"/>		
+									<Label /> 	
+										<Label class="sapMLabel"
+										text="Resumo despesas"></Label>											
+										<Input
+											id="resumoDesp"
+											width="60%"
+											editable="false"
+											value="{
+											path: 'oDetailModel>/Resdesp',
+                                            formatter: '.formatCurrency'	
+                                        }"/>		
+									<Label /> 	
+										<Label class="sapMLabel"
+										text="Valor líquido"></Label>											
+										<Input
+										id="valLiquido"
+											width="60%"
+											editable="false"
+											value="{
+											path: 'oDetailModel>/Vlremb',
+                                            formatter: '.formatCurrency'	
+                                        }"/>	
+
+                                            <Label class="sapMLabel"
+                                            text="Disponível"></Label>	
+                                            <Input
+                                            id="disponivel"
+                                                width="60%"
+                                                
+                                                editable="false"
+                                                value="{
+                                                path: 'oDetailModel>/Disponivel',
+                                                formatter: '.formatCurrency'
+                                                }"/>	          
+
+                                                <Label class="sapMLabel"
+                                                text="Utilizado"></Label>	
+                                                <Input
+                                                id="utilizado"
+                                                    width="60%"
+                                                    editable="false"
+                                                    value="{
+                                                    path: 'oDetailModel>/Utilizado',
+                                                    formatter: '.formatCurrency'
+                                                    }"/>                                                
+									<Label /> 	
+
+									</f:content>
+                                </f:SimpleForm>
+
+								<f:SimpleForm title="Dados Viagem" visible="false"> </f:SimpleForm>
+
+								<Table id="dadosViagem" visible="false">
+									<columns>
+										<Column>
+											<Text text="Data início viagem" />
+										</Column>
+										<Column>
+											<Text text="Hora início viagem" />
+										</Column>
+										<Column>
+											<Text text="Data final viagem"/>
+										</Column>
+										<Column>
+											<Text text="Hora final viagem"/>
+										</Column>
+										<Column>
+											<Text text="KM Total" />
+										</Column>
+									</columns>
+
+									<items>
+										<!-- <ColumnListItem>
+											<cells>
+												<Text text=""  id="dataInicio"></Text>
+												<Text text=""  id="horaInicio"></Text>
+												<Text text=""  id="dataFim"></Text>
+												<Text text=""  id="horaFim"></Text>
+												<Text text=""  id="kmTotal"></Text>
+											</cells>
+										</ColumnListItem> -->
+									</items>
+								</Table>
+
+                                <f:SimpleForm id="ItinetarioTitle"
+                                    title="Itinerário"
+                                    visible="false">
+                                </f:SimpleForm>
+
+                                <Table id="itinerarioTab"
+                                    visible="false"
+                                    mode="None">
+                                    <columns>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Item"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Origem"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Destino"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Data"/>
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="KM"/>
+                                        </Column>
+                                        <!-- <Column minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            hAlign="Center">
+                                            <Text text="Mais"/>
+                                        </Column> -->
+                                    </columns>
+                                    <items>
+
+                                    </items>
+                                </Table>
+
+                                <f:SimpleForm id="detDespTitle"
+                                    title="Detalhe despesas"
+                                    visible="false">
+                                </f:SimpleForm>
+                                <Table id="detDespesasTable"
+                                popinLayout="GridSmall"
+                                sticky="InfoToolbar" 
+                                autoPopinMode="true"
+                                contextualWidth="Large"
+								visible="false"
+                                swipe="BeginToEnd"
+                                mode="None">
+                                <columns>
+                                    <Column hAlign="Left">
+                                        <Text text="Data"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Despesa"/>
+                                    </Column>
+                                    <Column hAlign="Left"  visible="false">
+                                        <Text text="Conta"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Anexo"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Observação/Texto Item"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="R$ Pago"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="R$ Reembolso"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Documento"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Centro custo"/>
+                                    </Column>
+                                    <Column hAlign="Left">
+                                        <Text text="Ordem"/>
+                                    </Column>
+                                    <Column hAlign="Left" visible="false">
+                                        <Text text="Disponível"/>
+                                    </Column>
+                                    <Column hAlign="Left" visible="false">
+                                        <Text text="Utilizado"/>
+                                    </Column>
+                                </columns>
+                                <items>
+                                </items>
+                                </Table>
+                                <!-- FIM TIPO 2 -->								
+
+
+                                <!-- TIPO 3 -->
+                                <f:SimpleForm id="headerTipo3"
+                                    editable="true"
+                                    layout="ResponsiveGridLayout"
+                                    labelSpanXL="6"
+                                    visible="false"
+                                    labelSpanL="6"
+                                    labelSpanM="6"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="1"
+                                    emptySpanL="1"
+                                    emptySpanM="1"
+                                    emptySpanS="12"
+                                    columnsXL="3"
+                                    columnsL="3"
+                                    columnsM="2"
+                                    singleContainerFullSize="false">
+                                    <f:content>
+                                        <core:Title />
+                                        <Label text="Tipo de {i18n>lancamento}" />
+                                        <Input id="tipoLancTipo3"
+                                            value="3"
+                                            editable="false">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L2 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+
+                                        <Text text="Requisição de compras"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L4 M2 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <Label text="Tipo {i18n>requisicao}" />
+                                        <Input id="tipoReq"
+                                            placeholder=""
+                                            editable="false" value="{oDetailModel>/Bsart}"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSearch">
+                                            <suggestionItems>
+                                                <core:Item  />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text id="txtTipoReq"
+                                        class="textSize">
+                                        <layoutData>
+                                            <l:GridData span="XL1 L3 M2 S4" />
+                                        </layoutData>
+                                    </Text>
+
+                                        <core:Title />
+                                        <Label text="Empresa" />
+                                        <Input id="empresaTipo3"
+                                            editable="false"
+                                            placeholder="" value="{oDetailModel>/Bukrs}"
+                                            showSuggestion="true"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSearchBukrs">
+                                            <suggestionItems>
+                                                <core:Item />
+                                            </suggestionItems>
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Input>
+                                        <Text id="txtBukrsTipo3"
+                                            class="textSize">
+                                            <layoutData>
+                                                <l:GridData span="XL1 L3 M2 S4" />
+                                            </layoutData>
+                                        </Text>
+
+                                        <!-- <core:Title /> -->
+                                        <Label text="Valor total" />
+                                        <Input value="{
+                                            path: 'oDetailModel>/Wrbtr',
+                                            formatter: '.formatCurrency'
+                                        }"
+                                            id="vTotalTipo3"
+                                            submit=""
+                                            editable="false"/>
+
+                                    </f:content>
+
+                                </f:SimpleForm>
+
+                                <f:SimpleForm visible="false"
+                                    title="Itens da {i18n>requisicao} Compras"
+                                    id="reqTabTitle">
+                                </f:SimpleForm>
+
+                                <Table id="reqTable"
+                                popinLayout="GridSmall" visible="false"
+                                sticky="InfoToolbar"
+                                autoPopinMode="true"
+                                contextualWidth="Large"
+                                swipe="BeginToEnd"
+                                mode="None">
+        
+                                <columns>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Item"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Material"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Descrição do Material"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Quantidade"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="UM"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Centro"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Montante"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Grupo Merc."/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="{i18n>deposito}"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Ordem"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Data Remessa"/>
+                                    </Column>
+        
+                                    <!-- Classificação contábil -->
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Class."/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Conta {i18n>razao}"/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Centro Custo"/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Imobilizado"/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Sub {i18n>num}"/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Preço"/>
+                                    </Column>
+                                    <Column minScreenWidth="Desktop"
+                                        demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Grupo de compradores"/>
+                                    </Column>
+        
+                                    <!-- <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Mais"/>
+                                    </Column>
+                                    <Column demandPopin="true"
+                                        hAlign="Center">
+                                        <Text text="Eliminar"/>
+                                    </Column> -->
+        
+                                </columns>
+                                <items>
+        
+                                </items>
+                            </Table>
+                                <!-- FIM TIPO 3 -->
+
+					</content>
+					<footer>
+						<Toolbar>
+							<content>
+                                <Button id="aprovarEmMassa" text="Aprovar em massa" type="Emphasized" icon="sap-icon://accounting-document-verification" press="onAprovarEmMassa"></Button>
+								<ToolbarSpacer/>
+								<Button text="Aprovar" type="Accept" icon="sap-icon://accept" press="onAprovar"></Button>
+								<Button text="Rejeitar" type="Reject" icon="sap-icon://error" press="onRejeitar"></Button>
+								<ToolbarSpacer/>
+								<Button text="Voltar" type="Back" press="onVoltar"></Button>
+							</content>
+						</Toolbar>
+					</footer>
+				</Page>
+			</detailPages>
+		</SplitApp>
+
+	</Shell>
+</mvc:View>
